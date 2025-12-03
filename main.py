@@ -17,7 +17,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # allow all origins
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -25,6 +25,10 @@ app.add_middleware(
 
 class Prompt(BaseModel):
     prompt: str
+    
+@app.get("/")
+def helloworld():
+    return {"message":"Welcome to Cents-Ai-Microservice"}
 
 @app.post("/generate")
 async def generate(prompt: Prompt):
@@ -58,3 +62,12 @@ async def generate(prompt: Prompt):
     )
 
     return response.text
+
+
+# ============================
+# ⭐️ Render Fix: Bind to 0.0.0.0 and $PORT
+# ============================
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
