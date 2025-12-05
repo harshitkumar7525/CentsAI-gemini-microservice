@@ -10,6 +10,7 @@ import os
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+BACKEND_URL = os.getenv("BACKEND_URL")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
@@ -17,7 +18,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[str(BACKEND_URL)],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
