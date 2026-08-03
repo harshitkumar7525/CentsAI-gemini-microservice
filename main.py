@@ -1,4 +1,5 @@
 from datetime import date
+from typing import List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -27,11 +28,10 @@ async def root():
 async def health():
     return {"status": "ok"}
 
-@app.post("/generate", response_model=Response)
-async def generate(prompt: str):
-    print(prompt)
+@app.post("/generate", response_model=List[Response])
+async def generate(request: dict):
     today = str(date.today())
-    formatted_messages = prompt_template.format_messages(today=today, prompt=prompt)
+    formatted_messages = prompt_template.format_messages(today=today, prompt=request["prompt"])
 
     try:
         result = finance_agent.invoke({"messages": formatted_messages})
@@ -52,7 +52,7 @@ async def generate(prompt: str):
             detail=f"Failed to parse LLM response as structured expense data: {exc}",
         )
 
-    return parsed_response
+    return parsed_response.transactions
 
 if __name__ == "__main__":
     import uvicorn
