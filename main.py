@@ -1,7 +1,7 @@
 from datetime import date
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-
+import os
 from config import BACKEND_URL
 from schemas import Response
 from prompts import prompt_template, parser
@@ -29,6 +29,7 @@ async def health():
 
 @app.post("/generate", response_model=Response)
 async def generate(prompt: str):
+    print(prompt)
     today = str(date.today())
     formatted_messages = prompt_template.format_messages(today=today, prompt=prompt)
 
@@ -52,3 +53,8 @@ async def generate(prompt: str):
         )
 
     return parsed_response
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
